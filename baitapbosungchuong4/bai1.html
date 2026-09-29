@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>DOMParser</title>
+</head>
+<body>
+    <h2>Kết quả phân tích XML</h2>
+    <p><strong>Nút gốc:</strong> <span id="root-name"></span></p>
+    <p><strong>Nút con đầu tiên:</strong> <span id="child-name"></span></p>
+
+<script>
+    const xmlString = "<class><student><name>Nguyen Van A</name><age>20</age></student></class>";
+    const parser = new DOMParser();
+    const xmlDoc = parser.parseFromString(xmlString, "application/xml");
+    const parserError = xmlDoc.querySelector("parsererror");
+    if (parserError) {
+        console.error("Lỗi khi phân tích chuỗi XML!");
+    } else {
+        const rootNode = xmlDoc.documentElement;
+        const rootName = rootNode.nodeName; 
+        console.log("Tên nút gốc:", rootName);
+        const firstChildNode = rootNode.firstElementChild;
+        const childName = firstChildNode.nodeName; 
+        console.log("Tên nút con đầu tiên của gốc:", childName);
+        document.getElementById("root-name").textContent = rootName;
+        document.getElementById("child-name").textContent = childName;
+    }
+</script>
+
+</body>
+</html>

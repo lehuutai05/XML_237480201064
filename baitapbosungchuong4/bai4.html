@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Lọc dữ liệu XML theo điều kiện</title>
+</head>
+<body>
+
+    <h2>Danh sách sách có giá lớn hơn 30.00</h2>
+    <!-- Thẻ ul chứa danh sách kết quả lọc -->
+    <ul id="filtered-books"></ul>
+
+<script>
+    // 1. Tạo đối tượng XMLHttpRequest để tải tệp XML
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", "books.xml", true);
+
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            const xmlDoc = xhr.responseXML;
+
+            if (!xmlDoc) {
+                console.error("Lỗi phân tích XML!");
+                return;
+            }
+
+            // 2. Lấy danh sách tất cả các thẻ <book>
+            const books = xmlDoc.getElementsByTagName("book");
+            const listElement = document.getElementById("filtered-books");
+
+            // 3. Duyệt qua từng cuốn sách
+            for (let i = 0; i < books.length; i++) {
+                const book = books[i];
+
+                // Lấy phần tử <title> và <price> bên trong <book> hiện tại
+                const titleNode = book.getElementsByTagName("title")[0];
+                const priceNode = book.getElementsByTagName("price")[0];
+
+                if (titleNode && priceNode) {
+                    const titleText = titleNode.textContent;
+                    
+                    // 4. Ép kiểu dữ liệu giá trị văn bản của price từ chuỗi sang số thực (float)
+                    const priceValue = parseFloat(priceNode.textContent);
+
+                    // 5. Kiểm tra điều kiện: giá lớn hơn 30.00
+                    if (priceValue > 30.00) {
+                        // In ra console để kiểm tra
+                        console.log(`Sách thỏa mãn: ${titleText} - Giá: ${priceValue}`);
+
+                        // Tạo thẻ <li> động để hiển thị lên giao diện web
+                        const li = document.createElement("li");
+                        li.textContent = `${titleText} (Giá: ${priceValue})`;
+                        listElement.appendChild(li);
+                    }
+                }
+            }
+        } else {
+            console.error("Lỗi khi tải tệp XML. Mã lỗi:", xhr.status);
+        }
+    };
+
+    xhr.onerror = function() {
+        console.error("Lỗi kết nối hoặc bị chặn CORS. Hãy chắc chắn bạn đang chạy qua Live Server trong VS Code!");
+    };
+
+    xhr.send();
+</script>
+
+</body>
+</html>

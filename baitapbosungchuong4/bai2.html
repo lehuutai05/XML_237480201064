@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>XMLHttpRequest và getElementsByTagName</title>
+</head>
+<body>
+
+    <h2>Danh sách tiêu đề các cuốn sách</h2>
+    <ul id="book-list"></ul>
+
+<script>
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", "books.xml", true);
+
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            const xmlDoc = xhr.responseXML;
+            if (!xmlDoc) {
+                console.error("Không thể phân tích phản hồi dưới dạng XML. Hãy chắc chắn bạn đang chạy qua Live Server!");
+                return;
+            }
+
+            const titles = xmlDoc.getElementsByTagName("title");
+            const listElement = document.getElementById("book-list");
+
+            for (let i = 0; i < titles.length; i++) {
+                const titleValue = titles[i].childNodes[0].nodeValue;
+                console.log("Tiêu đề sách " + (i + 1) + ":", titleValue);
+
+                const li = document.createElement("li");
+                li.textContent = titleValue;
+                listElement.appendChild(li);
+            }
+        } else {
+            console.error("Lỗi khi tải tệp XML. Mã lỗi:", xhr.status, "(Hãy chắc chắn file books.xml nằm cùng thư mục và chạy qua Live Server)");
+        }
+    };
+
+    xhr.onerror = function() {
+        console.error("Lỗi kết nối mạng hoặc bị chặn CORS. Hãy chạy file qua Live Server trong VS Code!");
+    };
+
+    xhr.send();
+</script>
+
+</body>
+</html>

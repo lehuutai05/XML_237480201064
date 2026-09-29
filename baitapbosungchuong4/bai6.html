@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Bài 6 - Điều hướng parentNode và anh em</title>
+</head>
+<body>
+
+    <h2>Kết quả tìm kiếm đơn vị của nhân viên 002</h2>
+    <p><strong>Thông tin:</strong> <span id="result">Đang tìm kiếm...</span></p>
+
+<script>
+    // 1. Tạo đối tượng XMLHttpRequest để tải tệp XML
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", "danhsachnhanvien.xml", true);
+
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            const xmlDoc = xhr.responseXML;
+
+            if (!xmlDoc) {
+                console.error("Lỗi phân tích XML!");
+                return;
+            }
+
+            // 2. Lấy danh sách tất cả các thẻ <manv>
+            const manvList = xmlDoc.getElementsByTagName("manv");
+            let foundDonVi = "";
+            let foundHoTen = "";
+
+            // 3. Duyệt qua các thẻ <manv> để tìm giá trị "002"
+            for (let i = 0; i < manvList.length; i++) {
+                const manvNode = manvList[i];
+
+                if (manvNode.textContent.trim() === "002") {
+                    // 4. Sử dụng parentNode để lấy nút cha (<nhanvien>)
+                    const nhanVienNode = manvNode.parentNode;
+
+                    // 5. Từ nút cha, truy xuất thẻ <hoten> và <donvi>
+                    const hoTenNode = nhanVienNode.getElementsByTagName("hoten")[0];
+                    const donViNode = nhanVienNode.getElementsByTagName("donvi")[0];
+
+                    foundHoTen = hoTenNode ? hoTenNode.textContent : "Không rõ";
+                    foundDonVi = donViNode ? donViNode.textContent : "Không rõ";
+
+                    break; // Đã tìm thấy thì dừng vòng lặp
+                }
+            }
+
+            // 6. Hiển thị kết quả lên giao diện và console
+            const resultElement = document.getElementById("result");
+            if (foundDonVi) {
+                console.log(`Nhân viên: ${foundHoTen} (Mã: 002) - Đơn vị: ${foundDonVi}`);
+                resultElement.textContent = `Nhân viên: ${foundHoTen} — Đơn vị: ${foundDonVi}`;
+            } else {
+                console.log("Không tìm thấy nhân viên có mã 002.");
+                resultElement.textContent = "Không tìm thấy nhân viên có mã 002.";
+            }
+        } else {
+            console.error("Lỗi khi tải tệp XML. Mã lỗi:", xhr.status);
+        }
+    };
+
+    xhr.onerror = function() {
+        console.error("Lỗi kết nối hoặc bị chặn CORS. Hãy chắc chắn bạn đang chạy qua Live Server trong VS Code!");
+    };
+
+    xhr.send();
+</script>
+
+</body>
+</html>

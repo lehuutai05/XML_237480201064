@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Bài 8 - Xóa nút bằng removeChild</title>
+</head>
+<body>
+
+    <h2>Kết quả sau khi xóa nhân viên có mã "001"</h2>
+    <p><strong>Chuỗi XML sau khi xóa:</strong></p>
+    <pre id="xml-after" style="background: #f4f4f4; padding: 10px; border: 1px solid #ddd;"></pre>
+
+<script>
+    // Hàm phụ trợ giúp hiển thị thẻ XML rõ ràng trên trình duyệt
+    function escapeHtml(text) {
+        return text
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;");
+    }
+
+    // 1. Tạo đối tượng XMLHttpRequest để tải tệp XML
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", "danhsachnhanvien.xml", true);
+
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            const xmlDoc = xhr.responseXML;
+
+            if (!xmlDoc) {
+                console.error("Lỗi phân tích XML!");
+                return;
+            }
+
+            // 2. Lấy danh sách tất cả các thẻ <manv>
+            const manvList = xmlDoc.getElementsByTagName("manv");
+            let targetNhanVien = null;
+
+            // 3. Tìm thẻ <manv> có giá trị bằng "001"
+            for (let i = 0; i < manvList.length; i++) {
+                if (manvList[i].textContent.trim() === "001") {
+                    // Lấy nút cha trực tiếp của <manv> chính là thẻ <nhanvien> cần xóa
+                    targetNhanVien = manvList[i].parentNode;
+                    break;
+                }
+            }
+
+            // 4. Nếu tìm thấy, tiến hành xóa thông qua nút gốc <danhsach>
+            if (targetNhanVien) {
+                // Lấy nút gốc <danhsach> (hoặc dùng targetNhanVien.parentNode)
+                const rootNode = xmlDoc.documentElement;
+
+                // Sử dụng phương thức removeChild để xóa nút con <nhanvien>
+                rootNode.removeChild(targetNhanVien);
+
+                console.log("Đã xóa thành công nhân viên mã 001.");
+            } else {
+                console.log("Không tìm thấy nhân viên có mã 001 để xóa.");
+            }
+
+            // 5. Chuyển đổi đối tượng XML DOM ngược lại thành chuỗi để hiển thị
+            const serializer = new XMLSerializer();
+            const updatedXmlString = serializer.serializeToString(xmlDoc);
+
+            // Hiển thị kết quả ra màn hình
+            document.getElementById("xml-after").innerHTML = escapeHtml(updatedXmlString);
+        } else {
+            console.error("Lỗi khi tải tệp XML. Mã lỗi:", xhr.status);
+        }
+    };
+
+    xhr.onerror = function() {
+        console.error("Lỗi kết nối hoặc bị chặn CORS. Hãy chạy file qua Live Server trong VS Code!");
+    };
+
+    xhr.send();
+</script>
+
+</body>
+</html>

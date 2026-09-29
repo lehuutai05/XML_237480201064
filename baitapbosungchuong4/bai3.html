@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>firstElementChild và lastElementChild</title>
+</head>
+<body>
+
+    <h2>Thông tin sách từ nút &lt;book&gt;</h2>
+    <p><strong>Nút con đầu tiên:</strong> <span id="first-child">Đang tải...</span></p>
+    <p><strong>Nút con cuối cùng:</strong> <span id="last-child">Đang tải...</span></p>
+
+<script>
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", "books.xml", true);
+
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            const xmlDoc = xhr.responseXML;
+
+            if (!xmlDoc) {
+                console.error("Lỗi phân tích XML!");
+                return;
+            }
+            const bookNode = xmlDoc.getElementsByTagName("book")[0];
+
+            if (bookNode) {
+                const firstChild = bookNode.firstElementChild;
+                const lastChild = bookNode.lastElementChild;   
+                const firstValue = firstChild.textContent;
+                const lastValue = lastChild.textContent;
+                console.log("Nút đầu tiên (" + firstChild.nodeName + "):", firstValue);
+                console.log("Nút cuối cùng (" + lastChild.nodeName + "):", lastValue);
+                document.getElementById("first-child").textContent = firstValue + " (Thẻ: " + firstChild.nodeName + ")";
+                document.getElementById("last-child").textContent = lastValue + " (Thẻ: " + lastChild.nodeName + ")";
+            }
+        } else {
+            console.error("Lỗi khi tải tệp XML. Mã lỗi:", xhr.status);
+        }
+    };
+
+    xhr.onerror = function() {
+        console.error("Lỗi kết nối hoặc bị chặn CORS. Hãy chắc chắn bạn đang chạy qua Live Server trong VS Code!");
+    };
+
+    xhr.send();
+</script>
+
+</body>
+</html>

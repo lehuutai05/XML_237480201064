@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Bài 5 - Truy xuất thuộc tính Attribute Node</title>
+</head>
+<body>
+
+    <h2>Danh sách thể loại (category) của các cuốn sách</h2>
+    <!-- Thẻ ul chứa danh sách kết quả hiển thị ra giao diện -->
+    <ul id="book-categories"></ul>
+
+<script>
+    // 1. Tạo đối tượng XMLHttpRequest để tải tệp XML
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", "books.xml", true);
+
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            const xmlDoc = xhr.responseXML;
+
+            if (!xmlDoc) {
+                console.error("Lỗi phân tích XML!");
+                return;
+            }
+
+            // 2. Lấy danh sách tất cả các phần tử <book>
+            const books = xmlDoc.getElementsByTagName("book");
+            const listElement = document.getElementById("book-categories");
+
+            // 3. Duyệt qua từng cuốn sách trong danh sách
+            for (let i = 0; i < books.length; i++) {
+                const book = books[i];
+
+                // Lấy tiêu đề sách để dễ nhận biết (nếu có)
+                const titleNode = book.getElementsByTagName("title")[0];
+                const titleText = titleNode ? titleNode.textContent : "Không có tiêu đề";
+
+                // 4. Lấy giá trị thuộc tính 'category' bằng phương thức getAttribute()
+                const categoryValue = book.getAttribute("category");
+
+                // In ra console để kiểm tra
+                console.log(`Sách: ${titleText} - Thể loại (category): ${categoryValue}`);
+
+                // 5. Tạo thẻ <li> động để hiển thị lên giao diện web
+                const li = document.createElement("li");
+                li.textContent = `Sách: "${titleText}" — Thể loại: [${categoryValue}]`;
+                listElement.appendChild(li);
+            }
+        } else {
+            console.error("Lỗi khi tải tệp XML. Mã lỗi:", xhr.status);
+        }
+    };
+
+    xhr.onerror = function() {
+        console.error("Lỗi kết nối hoặc bị chặn CORS. Hãy chắc chắn bạn đang chạy qua Live Server trong VS Code!");
+    };
+
+    xhr.send();
+</script>
+
+</body>
+</html>
